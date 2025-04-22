@@ -2,7 +2,7 @@
 
 ## Description
 
-This is the source code for onlypaws.fan.
+This is the source code for [onlypaws.fan].
 
 ## Requirements
 
