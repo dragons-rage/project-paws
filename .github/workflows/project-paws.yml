@@ -22,10 +22,10 @@ on:
       release:
         description: "Is this a release?"
         required: true
-        default: "false"
+        default: false
         options:
-          - "true"
-          - "false"
+          - true
+          - false
 env:
   GITHUB_REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository }}
@@ -61,7 +61,7 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Get Release Semantic Version
-        if: ${{ inputs.release }} == "false"
+        if: ${{ inputs.release }} == false
         uses: PaulHatch/semantic-version@v5.4.0
         id: version
         with:
@@ -70,7 +70,7 @@ jobs:
           enable_prerelease_mode: true
 
       - name: Get Release Semantic Version
-        if: ${{ inputs.release }} == "true"
+        if: ${{ inputs.release }} == true
         uses: PaulHatch/semantic-version@v5.4.0
         id: version
         with:
@@ -98,6 +98,10 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
 
       - name: Tag Release (vX.Y.Z)
-        run: |
-          git tag ${{ steps.version.outputs.version_tag }}
-          git push origin ${{ steps.version.outputs.version_tag }}
+        uses: actions/create-release@latest
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          release_name: ${{ steps.version.outputs.version_tag }}
+          tag_name: ${{ steps.version.outputs.version_tag }}
+          prerelease: ${{ !inputs.release }}
