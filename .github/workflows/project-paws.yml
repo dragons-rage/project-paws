@@ -19,8 +19,9 @@ on:
       - "!README.md"
   workflow_dispatch:
     inputs:
-      release:
+      prerelease:
         description: "Is this a prerelease?"
+        type: choice
         required: true
         default: true
         options:
@@ -61,13 +62,13 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Get Release Semantic Version
-        if: ${{ inputs.release }} == false
+        if: ${{ inputers.prerelease }} == false
         uses: PaulHatch/semantic-version@v5.4.0
         id: version
         with:
           debug: true
-          version_format: ${{ inputs.release == true && '${major}.${minor}.${patch}-prerelease${increment}' || '${major}.${minor}.${patch}' }}
-          enable_prerelease_mode: ${{ inputs.release }}
+          version_format: ${{ inputers.prerelease == "true" && '${major}.${minor}.${patch}-prerelease${increment}' || '${major}.${minor}.${patch}' }}
+          enable_prerelease_mode: ${{ inputers.prerelease }}
 
       - name: Extract metadata for Docker
         id: meta
