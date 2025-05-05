@@ -17,7 +17,15 @@ on:
       - "!INFO.md"
       - "!LICENSE"
       - "!README.md"
-  workflow_dispatch: {}
+  workflow_dispatch:
+    inputs:
+      release:
+        description: "Is this a release?"
+        required: true
+        default: "false"
+        options:
+          - "true"
+          - "false"
 env:
   GITHUB_REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository }}
@@ -57,7 +65,7 @@ jobs:
         with:
           images: ${{ env.GITHUB_REGISTRY }}/${{ env.IMAGE_NAME }}
 
-      - name: Git Semantic Version
+      - name: Get Release Semantic Version
         uses: PaulHatch/semantic-version@v5.4.0
         id: version
       #        with:
@@ -68,27 +76,32 @@ jobs:
         run: echo "Version would be ${{ steps.version.outputs.version }}"
 
       - name: Build and Push Docker PR
-        if: github.event_name == 'pull_request'
+        if: ${{ inputs.release }} == "false"
         uses: docker/build-push-action@v6
         with:
           platforms: linux/amd64,linux/arm64
           context: .
-          push: false
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
+          push: true
+          tags: prerelease,${{ steps.version.outputs.version }}
 
       - name: Build and Push Docker Master Branch
-        if: github.event_name != 'pull_request'
+        if: ${{ inputs.release }} == "true"
         uses: docker/build-push-action@v6
         with:
           platforms: linux/amd64,linux/arm64
           context: "."
           push: true
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
+          tags: ${{ steps.meta.outputs.tags }},latest,${{ steps.version.outputs.version_tag }}
+          # labels: ${{ steps.meta.outputs.labels }}
 
       - name: Tag Release (vX.Y.Z)
-        if: github.event_name != 'pull_request'
+        if: ${{ inputs.release }} == "false"
+        run: |
+          git tag ${{ steps.version.outputs.version }}
+          git push origin ${{ steps.version.outputs.version }}
+
+      - name: Tag Release (vX.Y.Z)
+        if: ${{ inputs.release }} == "true"
         run: |
           git tag ${{ steps.version.outputs.version_tag }}
           git push origin ${{ steps.version.outputs.version_tag }}
