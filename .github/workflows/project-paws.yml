@@ -66,7 +66,7 @@ jobs:
         id: version
         with:
           debug: true
-          version_format: ${{ inputs.release == true && '${major}.${minor}.${patch}-prerelease${increment}' || '${major}.${minor}.${patch}' }}
+          version_format: ${{ inputs.release != true && '${major}.${minor}.${patch}-prerelease${increment}' || '${major}.${minor}.${patch}' }}
           enable_prerelease_mode: ${{ inputs.release }}
 
       - name: Extract metadata for Docker
