@@ -72,7 +72,7 @@ jobs:
         uses: docker/metadata-action@v5
         with:
           tags: |
-            semver,pattern="{{version}}",value=${{ steps.version.outputs.version }}
+            type=semver,pattern={{version}},value=${{ steps.version.outputs.version }}
           images: ${{ env.GITHUB_REGISTRY }}/${{ env.IMAGE_NAME }}
 
       - name: Echo Version
