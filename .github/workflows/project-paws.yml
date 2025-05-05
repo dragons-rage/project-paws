@@ -61,10 +61,21 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Get Release Semantic Version
+        if: ${{ inputs.release }} == "false"
         uses: PaulHatch/semantic-version@v5.4.0
         id: version
         with:
           debug: true
+          version_format: "${major}.${minor}.${patch}-prerelease${increment}"
+          enable_prerelease_mode: true
+
+      - name: Get Release Semantic Version
+        if: ${{ inputs.release }} == "true"
+        uses: PaulHatch/semantic-version@v5.4.0
+        id: version
+        with:
+          debug: true
+          enable_prerelease_mode: false
 
       - name: Extract metadata for Docker
         id: meta
@@ -75,7 +86,7 @@ jobs:
           images: ${{ env.GITHUB_REGISTRY }}/${{ env.IMAGE_NAME }}
 
       - name: Echo Version
-        run: echo "Version would be ${{ steps.version.outputs.version }} increment ${{steps.version.outputs.increment}}"  
+        run: echo "Version would be ${{ steps.version.outputs.version }}"
 
       - name: Build and Push Docker PR
         uses: docker/build-push-action@v6
