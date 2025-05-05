@@ -83,6 +83,7 @@ jobs:
           context: .
           push: true
           tags: prerelease,${{ steps.version.outputs.version }}
+          labels: ${{ steps.meta.outputs.labels }}
 
       - name: Build and Push Docker Master Branch
         if: ${{ inputs.release }} == "true"
@@ -92,7 +93,7 @@ jobs:
           context: "."
           push: true
           tags: ${{ steps.meta.outputs.tags }},latest,${{ steps.version.outputs.version_tag }}
-          # labels: ${{ steps.meta.outputs.labels }}
+          labels: ${{ steps.meta.outputs.labels }}
 
       - name: Tag Release (vX.Y.Z)
         if: ${{ inputs.release }} == "false"
