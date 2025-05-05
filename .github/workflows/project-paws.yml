@@ -36,7 +36,7 @@ jobs:
 
     permissions:
       packages: write
-      contents: read
+      contents: write
       attestations: write
       id-token: write
 
@@ -89,11 +89,9 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
 
-      - name: Tag Release (vX.Y.Z)
-        uses: actions/create-release@latest
+      - name: Tag git Release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          release_name: ${{ steps.version.outputs.version_tag }}
-          tag_name: ${{ steps.version.outputs.version_tag }}
-          prerelease: ${{ inputs.release }}
+        run: |
+          git tag ${{ steps.version.outputs.version }}
+          git push origin ${{ steps.version.outputs.version }}
