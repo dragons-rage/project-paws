@@ -63,9 +63,8 @@ jobs:
       - name: Get Release Semantic Version
         uses: PaulHatch/semantic-version@v5.4.0
         id: version
-      #        with:
-      #          change_path: "project-paws"
-      #          namespace: "project-paws"
+        with:
+          debug: true
 
       - name: Extract metadata for Docker
         id: meta
@@ -76,7 +75,7 @@ jobs:
           images: ${{ env.GITHUB_REGISTRY }}/${{ env.IMAGE_NAME }}
 
       - name: Echo Version
-        run: echo "Version would be ${{ steps.version.outputs.version }}"
+        run: echo "Version would be ${{ steps.version.outputs.version }} Increment: ${{ steps.version.outputs.increment }}"
 
       - name: Build and Push Docker PR
         uses: docker/build-push-action@v6
@@ -88,13 +87,6 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
 
       - name: Tag Release (vX.Y.Z)
-        if: ${{ inputs.release }} == "false"
-        run: |
-          git tag ${{ steps.version.outputs.version }}
-          git push origin ${{ steps.version.outputs.version }}
-
-      - name: Tag Release (vX.Y.Z)
-        if: ${{ inputs.release }} == "true"
         run: |
           git tag ${{ steps.version.outputs.version_tag }}
           git push origin ${{ steps.version.outputs.version_tag }}
