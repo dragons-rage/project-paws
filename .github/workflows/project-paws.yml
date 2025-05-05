@@ -20,9 +20,9 @@ on:
   workflow_dispatch:
     inputs:
       release:
-        description: "Is this a release?"
+        description: "Is this a prerelease?"
         required: true
-        default: false
+        default: true
         options:
           - true
           - false
@@ -66,8 +66,8 @@ jobs:
         id: version
         with:
           debug: true
-          version_format: ${{ inputs.release != true && '${major}.${minor}.${patch}-prerelease${increment}' || '${major}.${minor}.${patch}' }}
-          enable_prerelease_mode: ${{ !inputs.release }}
+          version_format: ${{ inputs.release == true && '${major}.${minor}.${patch}-prerelease${increment}' || '${major}.${minor}.${patch}' }}
+          enable_prerelease_mode: ${{ inputs.release }}
 
       - name: Extract metadata for Docker
         id: meta
@@ -78,7 +78,7 @@ jobs:
           images: ${{ env.GITHUB_REGISTRY }}/${{ env.IMAGE_NAME }}
 
       - name: Echo Version
-        run: echo "Version would be ${{ steps.version.outputs.version }}"
+        run: echo "Version would be ${{ steps.version.outputs.version_tag }}"
 
       - name: Build and Push Docker PR
         uses: docker/build-push-action@v6
@@ -96,4 +96,4 @@ jobs:
         with:
           release_name: ${{ steps.version.outputs.version_tag }}
           tag_name: ${{ steps.version.outputs.version_tag }}
-          prerelease: ${{ !inputs.release }}
+          prerelease: ${{ inputs.release }}
