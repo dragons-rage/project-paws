@@ -75,7 +75,7 @@ jobs:
           images: ${{ env.GITHUB_REGISTRY }}/${{ env.IMAGE_NAME }}
 
       - name: Echo Version
-        run: echo "Version would be ${{ steps.version.outputs.version }} Increment: ${{ steps.version.outputs.increment }}"
+        run: echo "Version would be ${{ steps.version.outputs.version }} increment ${{steps.version.outputs.increment}}"  
 
       - name: Build and Push Docker PR
         uses: docker/build-push-action@v6
