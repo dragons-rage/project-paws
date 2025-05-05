@@ -33,6 +33,13 @@ env:
 jobs:
   docker:
     runs-on: arc-runner-set
+
+    permissions:
+      packages: write
+      contents: read
+      attestations: write
+      id-token: write
+
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -45,12 +52,6 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      #      - name: Login to Docker Hub
-      #        uses: docker/login-action
-      #        with:
-      #          username: ${{ secrets.DOCKERHUB_USERNAME }}
-      #          password: ${{ secrets.DOCKERHUB_TOKEN }}
-
       - name: Login to Github Registery
         uses: docker/login-action@v3
         id: github-registry
@@ -59,12 +60,6 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Extract metadata for Docker
-        id: meta
-        uses: docker/metadata-action@v5
-        with:
-          images: ${{ env.GITHUB_REGISTRY }}/${{ env.IMAGE_NAME }}
-
       - name: Get Release Semantic Version
         uses: PaulHatch/semantic-version@v5.4.0
         id: version
@@ -72,27 +67,24 @@ jobs:
       #          change_path: "project-paws"
       #          namespace: "project-paws"
 
+      - name: Extract metadata for Docker
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          tags: |
+            semver,pattern="{{version}}",value=${{ steps.version.outputs.version }}
+          images: ${{ env.GITHUB_REGISTRY }}/${{ env.IMAGE_NAME }}
+
       - name: Echo Version
         run: echo "Version would be ${{ steps.version.outputs.version }}"
 
       - name: Build and Push Docker PR
-        if: ${{ inputs.release }} == "false"
         uses: docker/build-push-action@v6
         with:
           platforms: linux/amd64,linux/arm64
           context: .
           push: true
-          tags: prerelease,${{ steps.version.outputs.version }}
-          labels: ${{ steps.meta.outputs.labels }}
-
-      - name: Build and Push Docker Master Branch
-        if: ${{ inputs.release }} == "true"
-        uses: docker/build-push-action@v6
-        with:
-          platforms: linux/amd64,linux/arm64
-          context: "."
-          push: true
-          tags: ${{ steps.meta.outputs.tags }},latest,${{ steps.version.outputs.version_tag }}
+          tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
 
       - name: Tag Release (vX.Y.Z)
