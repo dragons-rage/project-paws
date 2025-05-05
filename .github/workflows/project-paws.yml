@@ -66,16 +66,8 @@ jobs:
         id: version
         with:
           debug: true
-          version_format: "${major}.${minor}.${patch}-prerelease${increment}"
-          enable_prerelease_mode: true
-
-      - name: Get Release Semantic Version
-        if: ${{ inputs.release }} == true
-        uses: PaulHatch/semantic-version@v5.4.0
-        id: version
-        with:
-          debug: true
-          enable_prerelease_mode: false
+          version_format: ${{ inputs.release != true && "${major}.${minor}.${patch}-prerelease${increment}" || "${major}.${minor}.${patch}" }}
+          enable_prerelease_mode: ${{ !inputs.release }}
 
       - name: Extract metadata for Docker
         id: meta
