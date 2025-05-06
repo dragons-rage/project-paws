@@ -1,5 +1,5 @@
 name: build-project-paws
-run-name: Project-Paws - ${{ github.actor }} by ${{ github.event_name }} ${{ github.base_ref }}
+run-name: Project-Paws - ${{ github.actor }} by ${{ github.event_name }} ${{ github.head_ref }}
 
 on:
   push:
@@ -57,6 +57,9 @@ jobs:
       - name: Get Release Semantic Version
         uses: ietf-tools/semver-action@v1
         id: semver
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          branch: main
 
       - name: Extract metadata for Docker
         id: meta
