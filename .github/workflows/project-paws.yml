@@ -1,11 +1,12 @@
 name: build-project-paws
-run-name: Project-Paws - ${{ github.actor }} by ${{ github.event_name }} ${{ github.ref }}
+run-name: Project-Paws - ${{ github.actor }} by ${{ github.event_name }} ${{ github.base_ref }}
+
 on:
   push:
     branches:
       - "main"
     paths:
-      - "/**"
+      - "*"
       - "!INFO.md"
       - "!README.md"
       - "!LICENSE"
@@ -13,26 +14,18 @@ on:
     branches:
       - main
     paths:
-      - "/**"
+      - "*"
       - "!INFO.md"
       - "!LICENSE"
       - "!README.md"
-  workflow_dispatch:
-    inputs:
-      prerelease:
-        description: "Is this a prerelease?"
-        type: choice
-        required: true
-        default: true
-        options:
-          - true
-          - false
+  workflow_dispatch: {}
+
 env:
   GITHUB_REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository }}
 
 jobs:
-  docker:
+  build-project-paws:
     runs-on: arc-runner-set
 
     permissions:
@@ -62,25 +55,19 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Get Release Semantic Version
-        if: ${{ inputs.prerelease }} == false
-        uses: PaulHatch/semantic-version@v5.4.0
-        id: version
-        with:
-          debug: true
-          bump_each_commit: true
-          version_format: ${{ inputs.prerelease == 'true' && '${major}.${minor}.${patch}-prerelease${increment}' || '${major}.${minor}.${patch}' }}
-          enable_prerelease_mode: ${{ inputs.prerelease }}
+        uses: ietf-tools/semver-action@v1
+        id: semver
 
       - name: Extract metadata for Docker
         id: meta
         uses: docker/metadata-action@v5
         with:
           tags: |
-            type=semver,pattern={{version}},value=${{ steps.version.outputs.version }}
+            type=semver,pattern={{version}},value=${{ steps.semver.outputs.nextStrict }}
           images: ${{ env.GITHUB_REGISTRY }}/${{ env.IMAGE_NAME }}
 
       - name: Echo Version
-        run: echo "Version would be ${{ steps.version.outputs.version_tag }}"
+        run: echo "Version would be ${{ steps.semver.outputs.next }}"
 
       - name: Build and Push Docker PR
         uses: docker/build-push-action@v6
@@ -95,5 +82,5 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          git tag ${{ steps.version.outputs.version_tag }}
-          git push origin ${{ steps.version.outputs.version_tag }}
+          git tag ${{ steps.semver.outputs.next }}
+          git push origin ${{ steps.semver.outputs.next }}
