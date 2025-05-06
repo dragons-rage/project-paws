@@ -1,5 +1,5 @@
 name: build-project-paws
-run-name: Project-Paws - ${{ github.actor }} by ${{ github.event_name }} ${{ github.head_ref }}
+run-name: Project-Paws - ${{ github.actor }} by ${{ github.event_name }} ${{ github.base_ref }}
 
 on:
   push:
@@ -18,7 +18,16 @@ on:
       - "!INFO.md"
       - "!LICENSE"
       - "!README.md"
-  workflow_dispatch: {}
+  workflow_dispatch:
+    inputs:
+      incrementVersion:
+        type: choice
+        description: Do we increment a version(patchAll)?
+        required: true
+        default: "false"
+        options:
+          - "true"
+          - "false"
 
 env:
   GITHUB_REGISTRY: ghcr.io
@@ -60,6 +69,7 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           branch: main
+          patchAll: ${{ inputs.incrementVersion }}
 
       - name: Extract metadata for Docker
         id: meta
