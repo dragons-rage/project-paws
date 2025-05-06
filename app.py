@@ -15,9 +15,9 @@ def index():
 
 
 ## TODO: Add to submissions file
-@app.route("/submission/<number>")
-def display_submission(sub_num):
-    return render_template("submission.html", sub_num=sub_num)
+# @app.route("/submission/<number>")
+# def display_submission(sub_num):
+#    return render_template("submission.html", sub_num=sub_num)
 
 
 ## TODO: Add the routes to paws files

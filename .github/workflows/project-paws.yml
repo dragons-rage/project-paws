@@ -67,7 +67,6 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           branch: main
-          patchAll: ${{ inputs.incrementVersion }}
           noVersionBumpBehavior: patch
 
       - name: Extract metadata for Docker
