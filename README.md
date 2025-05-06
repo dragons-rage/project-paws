@@ -12,9 +12,9 @@ This is the source code for [onlypaws.fan].
 ## Code
 
 - app.py - The main app, run using uwsgi and nginx
-- paws/* - directory should contain functions and classes for any extra.
-- templates/* - Any file that needs parsing via jinja
-- static/* - Any static files not needing parsing i.e. js, images, html
+- paws/\* - directory should contain functions and classes for any extra.
+- templates/\* - Any file that needs parsing via jinja
+- static/\* - Any static files not needing parsing i.e. js, images, html
 - backup.py - See ## Backup for more information
 - Dockerfile - Used to build a container
 
@@ -23,3 +23,9 @@ This is the source code for [onlypaws.fan].
 The app uses MongoDB so the backup script should backup the documents.
 The backup will not only backup MongoDB, but also any user uploaded
 content (images)
+
+## Note
+
+I use neovim so needed pyenv-pyright to generate the pyrightconfig.json.
+I use paws as my as my venv to separate my system, neovim, and paws.
+Don't need flask and other things anything but the purpose built repo.
