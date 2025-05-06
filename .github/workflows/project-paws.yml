@@ -1,20 +1,18 @@
 name: build-project-paws
-run-name: Project-Paws - ${{ github.actor }} by ${{ github.event_name }} ${{ github.base_ref }}
+run-name: Project-Paws - ${{ github.actor }} by ${{ github.event_name }} ${{ github.ref_name }}
 
 on:
   push:
     branches:
       - "main"
-    paths:
-      - "*"
+    paths-ignore:
       - "!INFO.md"
       - "!README.md"
       - "!LICENSE"
   pull_request:
     branches:
       - main
-    paths:
-      - "*"
+    paths-ignore:
       - "!INFO.md"
       - "!LICENSE"
       - "!README.md"
