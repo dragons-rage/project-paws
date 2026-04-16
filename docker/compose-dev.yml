@@ -1,8 +1,9 @@
 services:
   web:
-    image: project-paws:latest
+    image: project-paws:django
     build:
-      context: .
+      context: ../
+      dockerfile: ./docker/frontend.Dockerfile
     #ports:
     #  - 8665:8665
   #Add Database
