@@ -1,0 +1,11 @@
+services:
+  web:
+    image: project-paws:latest
+    build:
+      context: .
+    #ports:
+    #  - 8665:8665
+  #Add Database
+  #Add Redis but Valkey is faster
+  #Add nginx - So we can serve static pages and images
+  #Add apache solr for search

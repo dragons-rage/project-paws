@@ -1,10 +1,10 @@
-FROM python:3.13.3-bookworm
-
+FROM ghcr.io/astral-sh/uv:alpine
 RUN mkdir /app
 WORKDIR /app
 COPY . /app/
+RUN uv sync --no-cache
 
-RUN pip install -r requirements.txt
+#RUN pip install -r requirements.txt
 
 EXPOSE 9090
 

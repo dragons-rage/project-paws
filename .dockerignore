@@ -1,0 +1,4 @@
+configs/
+docker/
+docker-compose/
+data/
