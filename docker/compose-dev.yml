@@ -4,9 +4,15 @@ services:
     build:
       context: ../
       dockerfile: ./docker/frontend.Dockerfile
+    volume:
+      - shared-socket:/var/run/app
     #ports:
-    #  - 8665:8665
-  #Add Database
-  #Add Redis but Valkey is faster
-  #Add nginx - So we can serve static pages and images
-  #Add apache solr for search
+    #  - 5000:5000
+  # TODO: Add Database
+  # TODO: Add Redis but Valkey is faster
+  # TODO: Add Caddy with custom files
+  # OPTIONAL: Add apache solr for search
+volumes:
+  # To make things faster between uwsgi and caddy/nginx we
+  # are using unix sockts.
+  shared-sockets: {}
